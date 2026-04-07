@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 import streamlit as st
 
-from agents import analytics, data_ingestion
+from agents import ChatAgent, analytics, data_ingestion
 
 
 st.set_page_config(page_title="Lab Dashboard", layout="wide")
@@ -50,9 +50,8 @@ for r in results:
     )
 
 st.subheader("Chat with assistant")
+agent = ChatAgent(results)
 query = st.text_input("Ask a question about the data:")
 if query:
-    st.write(
-        "This demo does not connect to a real language model, but a future "
-        "implementation could route this query to an LLM-powered agent."
-    )
+    response = agent.answer(query)
+    st.write(response)
