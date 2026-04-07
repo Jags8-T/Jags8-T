@@ -1,65 +1,75 @@
 # AI Laboratory Dashboard (Agentic Demo)
 
 This repository provides an **immediate-demo, production-style prototype** of an
-agentic laboratory dashboard. It is designed to show how ingestion agents,
-analytics agents, and an operations copilot can work together in one interface.
+agentic laboratory dashboard. It shows how ingestion agents, analytics agents,
+and an operations copilot can work together in one interface.
 
 ## What is included
 
 - **Ingestion Agent (`agents/data_ingestion.py`)**
   - Normalizes records into a strict `LabResult` contract.
-  - Supports multiple input systems:
-    - Built-in synthetic sample data
-    - CSV upload
-    - JSON upload
-    - SQL query over DB-API connection (e.g., SQLite)
-  - Supports multi-source merge for combined operational views.
+  - Supports built-in sample data, CSV, JSON, SQL/DB-API, and multi-source merge.
 
 - **Analytics Agent (`agents/analytics.py`)**
-  - Dashboard KPIs (test count, pass/fail counts, pass rate, source count).
-  - Pass rate by test type.
-  - Daily volume trend.
-  - Rule-based alerts for high failure rates.
+  - Dashboard KPIs (test counts, pass/fail counts, pass rate, source count).
+  - Pass rate by test type, daily volume trend, and threshold alerts.
 
 - **Ops Copilot Agent (`agents/chat_agent.py`)**
-  - Deterministic, no external LLM required.
-  - Handles common lab manager prompts:
-    - KPI summary
-    - Overall and per-test pass rate
-    - Daily volume trend
-    - Failing sample list
+  - Deterministic responses (no external LLM required).
+  - Answers KPI summary, pass-rate questions, trend questions, failing sample lists.
 
 - **Streamlit Command Center (`dashboard/app.py`)**
   - Multi-mode source connections.
   - KPI cards + alert panel.
-  - Overview charts and records table.
-  - Embedded operations copilot pane.
+  - Overview charts + records table + embedded copilot.
+
+- **Demo Automation**
+  - `demo_run.py` prints a deterministic report for quick validation.
+  - `Makefile` shortcuts for install/test/demo/ui commands.
+  - `Dockerfile` for containerized one-command launch.
 
 ## Quick start
 
 ```bash
-pip install streamlit
-streamlit run dashboard/app.py
+python -m pip install -r requirements.txt
+python demo_run.py
+python -m streamlit run dashboard/app.py
 ```
 
-Open the local Streamlit URL and start in **Sample** mode for an instant demo.
+## One-command options
+
+```bash
+make install
+make test
+make demo
+make run-ui
+```
+
+## Docker demo
+
+```bash
+docker build -t lab-dashboard-demo .
+docker run --rm -p 8501:8501 lab-dashboard-demo
+```
+
+Then open `http://localhost:8501`.
 
 ## Suggested live demo flow (5 minutes)
 
-1. Launch dashboard in **Sample** mode and review KPI cards.
-2. Show **Monitoring Alerts** and explain threshold-based checks.
-3. Open **Overview** tab to review pass rate by test + daily volume trend.
-4. Open **Records** tab to show normalized fields (timestamp/system/technician).
+1. Run `python demo_run.py` to show deterministic KPI and copilot outputs.
+2. Launch UI and review KPI cards + monitoring alerts.
+3. In **Overview**, show pass-rate and daily trend charts.
+4. In **Records**, show normalized schema fields.
 5. In **Ops Copilot**, ask:
    - `Give KPI summary`
    - `pass rate by test`
    - `daily volume trend`
    - `list failed samples`
-6. Switch to **CSV upload** or **JSON upload** to demonstrate connector agility.
+6. Switch source mode to CSV/JSON/SQLite to demonstrate connector flexibility.
 
 ## Data contract
 
-Minimum required fields:
+Required fields:
 - `sample_id`
 - `test_name`
 - `value`
